@@ -81,10 +81,16 @@ namespace BlogMigrator
                   else
                   {
                     for (int i = 0; i <= App.sourceBlog.blogData.posts.Length - 1; i++)
-                     {
+                    {
                         PostData myPost = new PostData(App.sourceBlog.blogData.posts[i]);
+                        // Blogs that use guids will break. Assume they're a sequence.
+                        if (myPost.postid == 0)
+                        {
+                            myPost.postid = i + 1;
+                            App.sourceBlog.blogData.posts[i].id = myPost.postid.ToString();
+                        }
                         PostCollection.Add(myPost);
-                     }
+                    }
 
                      btnMigrate.IsEnabled = true;
                      btnSelectAllPosts.IsEnabled = true;                    

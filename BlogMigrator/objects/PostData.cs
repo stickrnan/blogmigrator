@@ -73,7 +73,9 @@ namespace BlogMigrator
             //enclosure = post.enclosure;
             //link = post.posturl;
             //permalink = "";
-            postid = Convert.ToInt32(post.id);
+            int postId = 0;
+            if (int.TryParse(post.id, out postId))
+                post.id = postId.ToString();
             //source = new Source();
             //userid = post.authors.author.ToString();
             //mt_allow_comments = 1;

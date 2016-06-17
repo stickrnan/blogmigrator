@@ -272,9 +272,11 @@ namespace BlogMigrator
                var totalCount = App.sourceBlog.blogData.posts.Length;
                for (int i = 0; i <= totalCount - 1; i++)
               {
+                 int pid = i;
                  currPost = App.sourceBlog.blogData.posts[i];
+                 int.TryParse(currPost.id, out pid);
 
-                 if (App.sourceBlog.postsToMigrate.Contains(Convert.ToInt32(currPost.id)))
+                 if (App.sourceBlog.postsToMigrate.Contains(Convert.ToInt32(pid)))
                  {
                     args.status = "Writing Post: " + string.Join(" ", currPost.title.Text);
                     migrationWorker.ReportProgress(Decimal.ToInt32((i * 100) / totalCount), args);
@@ -284,7 +286,7 @@ namespace BlogMigrator
                     newPost.dateCreated = currPost.datecreated;
                     newPost.userid = App.destBlog.username;
                     newPost.postid = currPost.id;
-                    newPost.description = currPost.content.Value;
+                    newPost.description = cleanPost(currPost.content.Value);
                     newPost.link = App.sourceBlog.rootUrl + currPost.posturl;
 
                     // Post Tags/Categories (currently only categories are implemented with BlogML
@@ -361,6 +363,13 @@ namespace BlogMigrator
            }
         }
 
+        private string cleanPost(string postContent)
+        {
+            postContent = postContent.Replace("\n", "").Replace("\r","");
+            postContent = postContent.Replace("src=\"/", "src=\"" + App.sourceBlog.rootUrl + "/");
+            postContent = postContent.Replace("href=\"/", "href=\"" + App.sourceBlog.rootUrl + "/");
+            return postContent;
+        }
        /// <summary>
        /// Determines which method of migration to use based on the source and
        /// destination variables specified.
